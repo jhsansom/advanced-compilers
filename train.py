@@ -105,14 +105,14 @@ for e in range(num_epochs):
         spill_costs_chaitin = []
         for i, graph in enumerate(batch):
             coloring = colorings[i, :]
-            spill_cost = graph.calc_spill_cost(coloring, K)
+            spill_cost = -graph.calc_spill_cost(coloring, K)
             spill_costs.append(spill_cost)
 
             coloring = findRegularChaitinColoring(graph, K)
             spill_cost_chaitin = 0
             for j, color in enumerate(coloring):
                 if color is None:
-                    spill_cost_chaitin += graph.costList[j]
+                    spill_cost_chaitin -= graph.costList[j]
             spill_costs_chaitin.append(spill_cost_chaitin)
 
         # Compute loss and backpropagate gradient
