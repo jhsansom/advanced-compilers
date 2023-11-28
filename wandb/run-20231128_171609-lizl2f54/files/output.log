@@ -1,0 +1,44 @@
+
+Epoch Num = 1/100
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/threadpoolctl.py:1010: RuntimeWarning:
+Found Intel OpenMP ('libiomp') and LLVM OpenMP ('libomp') loaded at
+the same time. Both libraries are known to be incompatible and this
+can cause random crashes or deadlocks on Linux when loaded in the
+same Python program.
+Using threadpoolctl may cause crashes or deadlocks. For more
+information and possible workarounds, please see
+    https://github.com/joblib/threadpoolctl/blob/master/multiple_openmp.md
+  warnings.warn(msg, RuntimeWarning)
+Epoch Num = 2/100
+Epoch Num = 3/100
+Epoch Num = 4/100
+Epoch Num = 5/100
+Epoch Num = 6/100
+Epoch Num = 7/100
+Epoch Num = 8/100
+Epoch Num = 9/100
+Epoch Num = 10/100
+Epoch Num = 11/100
+Traceback (most recent call last):
+  File "/Users/jakesansom/Desktop/CompilersProject/train_embed.py", line 97, in <module>
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jakesansom/Desktop/CompilersProject/gnn.py", line 23, in forward
+    embeddings, attns = self.create_embeddings(graphs)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jakesansom/Desktop/CompilersProject/gnn.py", line 41, in create_embeddings
+    embeddings = spectral_embedding(adjacency, n_components=n_components)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/sklearn/manifold/_spectral_embedding.py", line 313, in spectral_embedding
+    _, diffusion_map = eigsh(
+                       ^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/scipy/sparse/linalg/_eigen/arpack/arpack.py", line 1697, in eigsh
+    params.iterate()
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/scipy/sparse/linalg/_eigen/arpack/arpack.py", line 541, in iterate
+    xslice = slice(self.ipntr[0] - 1, self.ipntr[0] - 1 + self.n)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

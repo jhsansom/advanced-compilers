@@ -1,0 +1,26 @@
+
+Epoch Num = 1/30
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/sklearn/manifold/_spectral_embedding.py:273: UserWarning: Graph is not fully connected, spectral embedding may not work as expected.
+  warnings.warn(
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/scipy/sparse/linalg/_eigen/arpack/arpack.py:1600: RuntimeWarning: k >= N for N * N square matrix. Attempting to use scipy.linalg.eigh instead.
+  warnings.warn("k >= N for N * N square matrix. "
+Traceback (most recent call last):
+  File "/Users/jakesansom/Desktop/CompilersProject/train.py", line 73, in <module>
+    out = GNN(batch)
+          ^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jakesansom/Desktop/CompilersProject/gnn.py", line 22, in forward
+    embeddings, attns = self.create_embeddings(graphs)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jakesansom/Desktop/CompilersProject/gnn.py", line 47, in create_embeddings
+    all_embeddings = torch.nn.utils.rnn.pad_sequence(all_embeddings, batch_first=True)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/torch/nn/utils/rnn.py", line 400, in pad_sequence
+    return torch._C._nn.pad_sequence(sequences, batch_first, padding_value)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: The size of tensor a (4) must match the size of tensor b (8) at non-singleton dimension 1

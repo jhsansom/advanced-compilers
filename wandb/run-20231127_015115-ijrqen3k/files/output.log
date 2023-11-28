@@ -1,0 +1,60 @@
+
+Epoch Num = 1/100
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/sklearn/manifold/_spectral_embedding.py:273: UserWarning: Graph is not fully connected, spectral embedding may not work as expected.
+  warnings.warn(
+Epoch Num = 2/100
+Epoch Num = 3/100
+Epoch Num = 4/100
+Epoch Num = 5/100
+Epoch Num = 6/100
+Epoch Num = 7/100
+Epoch Num = 8/100
+Epoch Num = 9/100
+Epoch Num = 10/100
+Epoch Num = 11/100
+Epoch Num = 12/100
+Epoch Num = 13/100
+Epoch Num = 14/100
+Epoch Num = 15/100
+Epoch Num = 16/100
+Epoch Num = 17/100
+Traceback (most recent call last):
+  File "/Users/jakesansom/Desktop/CompilersProject/train.py", line 77, in <module>
+    out = GNN(batch)
+          ^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jakesansom/Desktop/CompilersProject/gnn.py", line 22, in forward
+    embeddings, attns = self.create_embeddings(graphs)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jakesansom/Desktop/CompilersProject/gnn.py", line 36, in create_embeddings
+    embeddings = spectral_embedding(adjacency, n_components=n_components)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/sklearn/manifold/_spectral_embedding.py", line 313, in spectral_embedding
+    _, diffusion_map = eigsh(
+                       ^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/scipy/sparse/linalg/_eigen/arpack/arpack.py", line 1697, in eigsh
+    params.iterate()
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/scipy/sparse/linalg/_eigen/arpack/arpack.py", line 560, in iterate
+    self.workd[yslice] = self.OPa(self.workd[Bxslice])
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/scipy/sparse/linalg/_interface.py", line 234, in matvec
+    y = self._matvec(x)
+        ^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/scipy/sparse/linalg/_eigen/arpack/arpack.py", line 944, in _matvec
+    return lu_solve(self.M_lu, x)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/scipy/linalg/_decomp_lu.py", line 143, in lu_solve
+    b1 = asarray_chkfinite(b)
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/numpy/lib/function_base.py", line 629, in asarray_chkfinite
+    if a.dtype.char in typecodes['AllFloat'] and not np.isfinite(a).all():
+                                                     ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/numpy/core/_methods.py", line 64, in _all
+    return umr_all(a, axis, dtype, out, keepdims)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

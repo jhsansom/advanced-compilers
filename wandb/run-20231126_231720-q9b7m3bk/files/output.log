@@ -1,0 +1,15 @@
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/sklearn/manifold/_spectral_embedding.py:273: UserWarning: Graph is not fully connected, spectral embedding may not work as expected.
+  warnings.warn(
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/scipy/sparse/linalg/_eigen/arpack/arpack.py:1600: RuntimeWarning: k >= N for N * N square matrix. Attempting to use scipy.linalg.eigh instead.
+  warnings.warn("k >= N for N * N square matrix. "
+Traceback (most recent call last):
+  File "/Users/jakesansom/Desktop/CompilersProject/train.py", line 86, in <module>
+  File "/Users/jakesansom/Desktop/CompilersProject/chaitin.py", line 49, in findRegularChaitinColoring
+    nodeCopy = copy.deepcopy(reducedNodes)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 206, in _deepcopy_list
+    append(deepcopy(a, memo))
+KeyboardInterrupt

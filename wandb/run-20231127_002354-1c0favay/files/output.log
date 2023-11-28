@@ -1,0 +1,11 @@
+
+Epoch Num = 1/30
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/scipy/sparse/linalg/_eigen/arpack/arpack.py:1600: RuntimeWarning: k >= N for N * N square matrix. Attempting to use scipy.linalg.eigh instead.
+  warnings.warn("k >= N for N * N square matrix. "
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/sklearn/manifold/_spectral_embedding.py:273: UserWarning: Graph is not fully connected, spectral embedding may not work as expected.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/Users/jakesansom/Desktop/CompilersProject/train.py", line 89, in <module>
+    q_values = torch.mean(q_values, 1)
+               ^^^^^^^^^^^^^^^^^^^^^^^
+IndexError: Dimension out of range (expected to be in range of [-1, 0], but got 1)

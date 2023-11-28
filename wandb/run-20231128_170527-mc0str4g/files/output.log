@@ -1,0 +1,42 @@
+
+Epoch Num = 1/100
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/threadpoolctl.py:1010: RuntimeWarning:
+Found Intel OpenMP ('libiomp') and LLVM OpenMP ('libomp') loaded at
+the same time. Both libraries are known to be incompatible and this
+can cause random crashes or deadlocks on Linux when loaded in the
+same Python program.
+Using threadpoolctl may cause crashes or deadlocks. For more
+information and possible workarounds, please see
+    https://github.com/joblib/threadpoolctl/blob/master/multiple_openmp.md
+  warnings.warn(msg, RuntimeWarning)
+Epoch Num = 2/100
+Epoch Num = 3/100
+Epoch Num = 4/100
+Traceback (most recent call last):
+  File "/Users/jakesansom/Desktop/CompilersProject/train_embed.py", line 113, in <module>
+    coloring = findRegularChaitinColoring(graph, K)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jakesansom/Desktop/CompilersProject/chaitin.py", line 49, in findRegularChaitinColoring
+    nodeCopy = copy.deepcopy(reducedNodes)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 206, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+      ^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 128, in deepcopy
+    def deepcopy(x, memo=None, _nil=[]):
+KeyboardInterrupt

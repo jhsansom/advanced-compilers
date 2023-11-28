@@ -1,0 +1,47 @@
+
+Epoch Num = 1/60
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/scipy/sparse/linalg/_eigen/arpack/arpack.py:1600: RuntimeWarning: k >= N for N * N square matrix. Attempting to use scipy.linalg.eigh instead.
+  warnings.warn("k >= N for N * N square matrix. "
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/sklearn/manifold/_spectral_embedding.py:273: UserWarning: Graph is not fully connected, spectral embedding may not work as expected.
+  warnings.warn(
+Epoch Num = 2/60
+Epoch Num = 3/60
+Epoch Num = 4/60
+Epoch Num = 5/60
+Epoch Num = 6/60
+Epoch Num = 7/60
+Epoch Num = 8/60
+Epoch Num = 9/60
+Epoch Num = 10/60
+Epoch Num = 11/60
+Epoch Num = 12/60
+Epoch Num = 13/60
+Epoch Num = 14/60
+Epoch Num = 15/60
+Epoch Num = 16/60
+Epoch Num = 17/60
+Epoch Num = 18/60
+Epoch Num = 19/60
+Epoch Num = 20/60
+Epoch Num = 21/60
+Epoch Num = 22/60
+Epoch Num = 23/60
+Epoch Num = 24/60
+Epoch Num = 25/60
+Epoch Num = 26/60
+Epoch Num = 27/60
+Epoch Num = 28/60
+Epoch Num = 29/60
+Epoch Num = 30/60
+Epoch Num = 31/60
+Epoch Num = 32/60
+Epoch Num = 33/60
+Epoch Num = 34/60
+Epoch Num = 35/60
+Epoch Num = 36/60
+Traceback (most recent call last):
+  File "/Users/jakesansom/Desktop/CompilersProject/train.py", line 108, in <module>
+    spill_cost = graph.calc_spill_cost(coloring, K)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jakesansom/Desktop/CompilersProject/graph.py", line -1, in calc_spill_cost
+KeyboardInterrupt

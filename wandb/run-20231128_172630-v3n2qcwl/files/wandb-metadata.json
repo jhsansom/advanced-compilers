@@ -1,0 +1,45 @@
+{
+    "os": "macOS-10.16-x86_64-i386-64bit",
+    "python": "3.11.5",
+    "heartbeatAt": "2023-11-28T22:26:31.097920",
+    "startedAt": "2023-11-28T22:26:30.552496",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/Users/jakesansom/Desktop/CompilersProject/train_embed.py",
+    "codePathLocal": "train_embed.py",
+    "codePath": "train_embed.py",
+    "git": {
+        "remote": "https://github.com/jhsansom/advanced-compilers.git",
+        "commit": "7011d423b98cb328fa5515513bdee5e99aafa316"
+    },
+    "email": "jhsansom@gmail.com",
+    "root": "/Users/jakesansom/Desktop/CompilersProject",
+    "host": "Jakes-MacBook-Air-2.local",
+    "username": "jakesansom",
+    "executable": "/opt/anaconda3/envs/compilers2/bin/python",
+    "cpu_count": 8,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2400,
+        "min": 2400,
+        "max": 2400
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2400,
+            "min": 2400,
+            "max": 2400
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 460.4317207336426,
+            "used": 9.275474548339844
+        }
+    },
+    "memory": {
+        "total": 16.0
+    }
+}

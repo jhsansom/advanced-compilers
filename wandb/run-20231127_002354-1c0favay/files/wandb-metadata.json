@@ -1,0 +1,45 @@
+{
+    "os": "macOS-10.16-x86_64-i386-64bit",
+    "python": "3.11.5",
+    "heartbeatAt": "2023-11-27T05:23:55.945389",
+    "startedAt": "2023-11-27T05:23:54.953354",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/Users/jakesansom/Desktop/CompilersProject/train.py",
+    "codePathLocal": "train.py",
+    "codePath": "Desktop/CompilersProject/train.py",
+    "git": {
+        "remote": null,
+        "commit": "d5bb9e9640e2ed7a31e209393376549d737d276b"
+    },
+    "email": "jhsansom@gmail.com",
+    "root": "/Users/jakesansom",
+    "host": "Jakes-MacBook-Air-2.local",
+    "username": "jakesansom",
+    "executable": "/opt/anaconda3/envs/compilers2/bin/python",
+    "cpu_count": 8,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2400,
+        "min": 2400,
+        "max": 2400
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2400,
+            "min": 2400,
+            "max": 2400
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 460.4317207336426,
+            "used": 9.275474548339844
+        }
+    },
+    "memory": {
+        "total": 16.0
+    }
+}

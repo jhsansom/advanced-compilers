@@ -1,0 +1,58 @@
+
+Epoch Num = 1/100
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/sklearn/manifold/_spectral_embedding.py:273: UserWarning: Graph is not fully connected, spectral embedding may not work as expected.
+  warnings.warn(
+Epoch Num = 2/100
+Epoch Num = 3/100
+Epoch Num = 4/100
+Epoch Num = 5/100
+Epoch Num = 6/100
+Epoch Num = 7/100
+Epoch Num = 8/100
+Epoch Num = 9/100
+Epoch Num = 10/100
+Epoch Num = 11/100
+Epoch Num = 12/100
+Epoch Num = 13/100
+Epoch Num = 14/100
+Epoch Num = 15/100
+Epoch Num = 16/100
+Epoch Num = 17/100
+Epoch Num = 18/100
+Epoch Num = 19/100
+Epoch Num = 20/100
+Epoch Num = 21/100
+Epoch Num = 22/100
+Epoch Num = 23/100
+Epoch Num = 24/100
+Epoch Num = 25/100
+Epoch Num = 26/100
+Epoch Num = 27/100
+Traceback (most recent call last):
+  File "/Users/jakesansom/Desktop/CompilersProject/train.py", line 111, in <module>
+    coloring = findRegularChaitinColoring(graph, K)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jakesansom/Desktop/CompilersProject/chaitin.py", line 49, in findRegularChaitinColoring
+    nodeCopy = copy.deepcopy(reducedNodes)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 206, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 172, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 271, in _reconstruct
+    state = deepcopy(state, memo)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 146, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 231, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+      ^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/envs/compilers2/lib/python3.11/copy.py", line 128, in deepcopy
+    def deepcopy(x, memo=None, _nil=[]):
+KeyboardInterrupt

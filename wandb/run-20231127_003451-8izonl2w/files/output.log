@@ -1,0 +1,20 @@
+
+Epoch Num = 1/15
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/scipy/sparse/linalg/_eigen/arpack/arpack.py:1600: RuntimeWarning: k >= N for N * N square matrix. Attempting to use scipy.linalg.eigh instead.
+  warnings.warn("k >= N for N * N square matrix. "
+/opt/anaconda3/envs/compilers2/lib/python3.11/site-packages/sklearn/manifold/_spectral_embedding.py:273: UserWarning: Graph is not fully connected, spectral embedding may not work as expected.
+  warnings.warn(
+Epoch Num = 2/15
+Epoch Num = 3/15
+Epoch Num = 4/15
+Epoch Num = 5/15
+Epoch Num = 6/15
+Epoch Num = 7/15
+Epoch Num = 8/15
+Epoch Num = 9/15
+Epoch Num = 10/15
+Epoch Num = 11/15
+Epoch Num = 12/15
+Epoch Num = 13/15
+Epoch Num = 14/15
+Epoch Num = 15/15

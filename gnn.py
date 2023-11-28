@@ -3,10 +3,11 @@ from sklearn.manifold import spectral_embedding
 import numpy as np
 import torch
 from torch import nn
+import warnings
 
 class GraphNeuralNetwork(nn.Module):
 
-    def __init__(self, embed_dim=32, num_layers=3, max_colors=10):
+    def __init__(self, embed_dim=32, num_layers=3, out_dim=4):
         super().__init__()
         self.embed_dim = embed_dim
         transformer_layer = nn.TransformerEncoderLayer(
@@ -16,14 +17,16 @@ class GraphNeuralNetwork(nn.Module):
             batch_first=True
         )
         self.encoder = nn.TransformerEncoder(transformer_layer, num_layers)
-        self.output = nn.Linear(self.embed_dim, max_colors)
+        self.output = nn.Linear(self.embed_dim, out_dim)
 
     def forward(self, graphs):
         embeddings, attns = self.create_embeddings(graphs)
 
         out_embeddings = self.encoder(embeddings, src_key_padding_mask=attns)
 
-        return self.output(out_embeddings)
+        embeds = self.output(out_embeddings)
+
+        return embeds
 
     def create_embeddings(self, graphs):
         all_embeddings = []
@@ -33,7 +36,9 @@ class GraphNeuralNetwork(nn.Module):
             # Create spectral embeddings of nodes
             adjacency = np.array(graph.adjacencyMatrix)
             n_components = min(self.embed_dim, len(graph.adjacencyMatrix)-2)
-            embeddings = spectral_embedding(adjacency, n_components=n_components)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                embeddings = spectral_embedding(adjacency, n_components=n_components)
             if embeddings.shape[1] < self.embed_dim:
                 added_dim = self.embed_dim - embeddings.shape[1]
                 added_zeros = np.zeros((embeddings.shape[0], added_dim))
