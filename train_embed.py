@@ -11,10 +11,14 @@ from gnn import GraphNeuralNetwork
 from chaitin import findRegularChaitinColoring
 from statistics import mean
 import math
+from collections import Counter
 import wandb
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter()
 from sklearn.cluster import KMeans
 
 track_via_wandb = True
+track_via_tensorboard = False
 
 class GraphDataset(Dataset):
 
@@ -50,22 +54,31 @@ class GraphDataset(Dataset):
         return self.num_graphs
     
 def compute_loss(gnn_outputs, irGraphs):
-    cosine_sims = torch.bmm(gnn_outputs, gnn_outputs.transpose(1, 2))
+    #sims = torch.bmm(gnn_outputs, gnn_outputs.transpose(1, 2))
+    sims = torch.cdist(gnn_outputs, gnn_outputs)
     with torch.no_grad():
-        adjacencies = torch.zeros(cosine_sims.shape, dtype=torch.float)
-        non_adjacencies = torch.zeros(cosine_sims.shape, dtype=torch.float)
+        adjacencies = torch.zeros(sims.shape, dtype=torch.float)
+        non_adjacencies = torch.zeros(sims.shape, dtype=torch.float)
         for i in range(len(irGraphs)):
+            seq_len = len(irGraphs[i].costList)
+            inverse_eye = torch.ones((seq_len, seq_len)) - torch.eye(seq_len)
             weights = torch.tensor(irGraphs[i].costList, dtype=torch.float).unsqueeze(1)
             adjacency = torch.tensor(irGraphs[i].adjacencyMatrix, dtype=torch.float)
-            result = adjacency * weights
-            adjacencies[i,:result.shape[0],:result.shape[1]] = result
-            result = (adjacency - 1) * weights
-            non_adjacencies[i,:result.shape[0],:result.shape[1]] = result
-    masked_sims = cosine_sims * adjacencies
-    masked_sims_non_adjacent = cosine_sims * non_adjacencies
-    batch_sum = torch.sum(masked_sims) - torch.sum(masked_sims_non_adjacent)
+            result = adjacency * weights * inverse_eye
+            adjacencies[i,:seq_len,:seq_len] = result
+            result = (1 - adjacency) * weights * inverse_eye
+            non_adjacencies[i,:seq_len,:seq_len] = result
 
-    return batch_sum
+        neg_scale = torch.count_nonzero(adjacencies)
+        pos_scale = torch.count_nonzero(non_adjacencies)
+
+    masked_sims = sims * adjacencies
+    masked_sims_non_adjacent = sims * non_adjacencies
+    neg = torch.sum(masked_sims)/neg_scale
+    pos = torch.sum(masked_sims_non_adjacent)/pos_scale
+    batch_sum = -neg + pos
+
+    return batch_sum, neg, pos
     
 def collate_fn(inputs):
     return inputs
@@ -77,6 +90,8 @@ if track_via_wandb:
         project="advanced-compilers"
         # Track hyperparameters and run metadata
         )
+if track_via_tensorboard:
+    writer = SummaryWriter()
     
 dataset = GraphDataset(1000)
 dataloader = DataLoader(dataset, batch_size=16, shuffle=True, collate_fn=collate_fn)
@@ -88,6 +103,8 @@ loss_fn = nn.MSELoss()
 optimizer = torch.optim.SGD(GNN.parameters(), lr=0.001, momentum=0.9)
 softmax = nn.Softmax(dim=-1)
 
+ii = 0
+
 num_epochs = 100
 for e in range(num_epochs):
     print(f'Epoch Num = {e+1}/{num_epochs}')
@@ -97,31 +114,43 @@ for e in range(num_epochs):
         out = GNN(batch)
 
         # Compute loss and take a gradient descent step
-        loss = compute_loss(out, batch)
+        loss, neg, pos = compute_loss(out, batch)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(GNN.parameters(), 10)
         optimizer.step()
-
-        # Evaluate actual spill cost
-        K = random.randint(3, 10)
         
+        # Evaluate actual spill cost
         spill_costs = []
         spill_costs_chaitin = []
         for i, graph in enumerate(batch):
-            graph_embeds = out[i,:,:].squeeze().detach().numpy()
+            ii += 1
+            num_nodes = len(graph.costList)
+            K = random.randint(3, num_nodes)
+            graph_embeds = out[i,:num_nodes,:].squeeze().detach().numpy()
+
             #skm = SphericalKMeans(n_clusters=K).fit(graph_embeds)
-            kmeans = KMeans(n_clusters=K, n_init='auto').fit(graph_embeds)
-            coloring = kmeans.labels_
+            coloring = KMeans(n_clusters=K, n_init='auto').fit_predict(graph_embeds)
+            our_color = coloring
 
             spill_cost = -graph.calc_spill_cost(coloring, K)
-            spill_costs.append(spill_cost)
+            spill_costs.append(spill_cost*K)
 
             coloring = findRegularChaitinColoring(graph, K)
             spill_cost_chaitin = 0
             for j, color in enumerate(coloring):
                 if color is None:
                     spill_cost_chaitin -= graph.costList[j]
-            spill_costs_chaitin.append(spill_cost_chaitin)
+            spill_costs_chaitin.append(spill_cost_chaitin*K)
+
+            if False: #(ii > 500) and (len(graph.costList) > 50):
+                print(f'K = {K}')
+                print(f'Coloring = {our_color}')
+                print(f'Spill cost = {spill_cost}')
+                print(f'Adjacency = {graph.adjacencyMatrix}')
+                print(f'Output embeddings = {graph_embeds}')
+                print(f'Chaitin coloring = {coloring}')
+                print(f'Spill cost = {spill_cost_chaitin}')
+                ii = 0
 
 
         # Calculate w.r.t. Chaitin
@@ -131,4 +160,12 @@ for e in range(num_epochs):
         #print(f'RATIO = {ratio:.3f}')
 
         if track_via_wandb:
-            wandb.log({"loss": loss, "ratio": ratio})
+            wandb.log({"loss": loss, "ratio": ratio, "neg": neg, "pos": pos})
+        if track_via_tensorboard:
+            writer.add_scalar("loss", loss, e)
+            writer.add_scalar("ratio", ratio, e)
+
+    
+
+if track_via_tensorboard:
+    writer.close()

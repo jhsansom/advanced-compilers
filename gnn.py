@@ -26,6 +26,7 @@ class GraphNeuralNetwork(nn.Module):
 
         embeds = self.output(out_embeddings)
 
+        #return nn.functional.normalize(embeds, dim=-1)
         return embeds
 
     def create_embeddings(self, graphs):
