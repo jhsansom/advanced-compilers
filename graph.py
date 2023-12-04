@@ -56,4 +56,4 @@ class InterferenceGraph:
                         spilled.append(j)
                         cost += self.costList[j]
 
-        return cost
+        return cost, spilled

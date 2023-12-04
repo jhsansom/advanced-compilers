@@ -15,7 +15,8 @@ from collections import Counter
 import wandb
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter()
-from sklearn.cluster import KMeans
+#from sklearn.cluster import KMeans
+from torch_kmeans import SoftKMeans
 
 track_via_wandb = True
 track_via_tensorboard = False
@@ -29,8 +30,8 @@ class GraphDataset(Dataset):
 
     def __getitem__(self, idx):
         #num_nodes = random.randint(3, self.max_nodes)
-        num_nodes = random.randint(9, 10)
-        #num_nodes = 10
+        #num_nodes = random.randint(9, 10)
+        num_nodes = 10
         #weights = np.random.randint(1, 1, num_nodes)
         weights = np.ones(num_nodes)
 
@@ -96,9 +97,9 @@ if track_via_tensorboard:
     writer = SummaryWriter()
     
 dataset = GraphDataset(1000)
-dataloader = DataLoader(dataset, batch_size=16, shuffle=True, collate_fn=collate_fn)
+dataloader = DataLoader(dataset, batch_size=64, shuffle=True, collate_fn=collate_fn)
 
-GNN = GraphNeuralNetwork()
+GNN = GraphNeuralNetwork(num_layers=2, embed_dim=128)
 GNN.train()
 
 loss_fn = nn.MSELoss()
@@ -116,10 +117,12 @@ for e in range(num_epochs):
         out = GNN(batch)
 
         # Compute loss and take a gradient descent step
-        loss, neg, pos = compute_loss(out, batch)
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(GNN.parameters(), 10)
-        optimizer.step()
+        #loss, neg, pos = compute_loss(out, batch)
+        #loss.backward()
+        #torch.nn.utils.clip_grad_norm_(GNN.parameters(), 10)
+        #optimizer.step()
+
+        loss = 0
         
         # Evaluate actual spill cost
         spill_costs = []
@@ -127,15 +130,32 @@ for e in range(num_epochs):
         for i, graph in enumerate(batch):
             ii += 1
             num_nodes = len(graph.costList)
-            K = random.randint(3, num_nodes)
-            graph_embeds = out[i,:num_nodes,:].squeeze().detach().numpy()
+            K = random.randint(3, num_nodes-1)
+            graph_embeds = out[i,:num_nodes,:].unsqueeze(0)#.squeeze().detach().numpy()
 
             #skm = SphericalKMeans(n_clusters=K).fit(graph_embeds)
-            coloring = KMeans(n_clusters=K, n_init='auto').fit_predict(graph_embeds)
-            our_color = coloring
+            #coloring = SoftKMeans(n_clusters=K, n_init='auto').fit_predict(graph_embeds)
+            softkmeans = SoftKMeans(n_clusters=K, verbose=False)
+            cluster_result = softkmeans(graph_embeds)
+            soft_assignment = cluster_result.soft_assignment.squeeze()
+            coloring = cluster_result.labels.squeeze().detach().numpy()
 
-            spill_cost = -graph.calc_spill_cost(coloring, K)
+            spill_cost, spilled = graph.calc_spill_cost(coloring, K)
+            spill_cost = -spill_cost
+            loss += spill_cost
             spill_costs.append(spill_cost*K)
+
+
+            # Construct ground truth labels
+            #default_color = torch.argmax(soft_assignment, dim=-1)
+            num_spilled = len(spilled)
+            num_not_spilled = num_nodes - num_spilled
+            for j in range(num_nodes):
+                if j in spilled:
+                    loss += torch.log(soft_assignment[j, coloring[j]]) / num_spilled
+                else:
+                    loss -= torch.log(soft_assignment[j, coloring[j]]) / num_not_spilled
+
 
             coloring = findRegularChaitinColoring(graph, K)
             spill_cost_chaitin = 0
@@ -154,6 +174,9 @@ for e in range(num_epochs):
                 print(f'Spill cost = {spill_cost_chaitin}')
                 ii = 0
 
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(GNN.parameters(), 1)
+        optimizer.step()
 
         # Calculate w.r.t. Chaitin
         avg_gnn = mean(spill_costs)
@@ -162,7 +185,7 @@ for e in range(num_epochs):
         #print(f'RATIO = {ratio:.3f}')
 
         if track_via_wandb:
-            wandb.log({"loss": loss, "ratio": ratio, "neg": neg, "pos": pos})
+            wandb.log({"loss": loss, "ratio": ratio})
         if track_via_tensorboard:
             writer.add_scalar("loss", loss, e)
             writer.add_scalar("ratio", ratio, e)
