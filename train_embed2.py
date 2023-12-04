@@ -21,21 +21,51 @@ from torch_kmeans import SoftKMeans
 track_via_wandb = True
 track_via_tensorboard = False
 
+def generate_random_graph(n_nodes):
+    """
+    Generates a random graph with each node connected to at least one other node.
+
+    :param n_nodes: Number of nodes in the graph
+    :return: A networkx graph
+    """
+    if n_nodes < 2:
+        raise ValueError("Number of nodes must be at least 2.")
+
+    G = networkx.Graph()
+
+    # Add nodes
+    G.add_nodes_from(range(n_nodes))
+
+    # Ensure each node is connected to at least one other node
+    for node in range(n_nodes):
+        # Choose a node to connect that is not the current node
+        other_node = random.choice([n for n in range(n_nodes) if n != node])
+        G.add_edge(node, other_node)
+
+    # Optionally, add more edges randomly
+    additional_edges = random.randint(0, n_nodes * (n_nodes - 1) // 2)
+    for _ in range(additional_edges):
+        node1, node2 = random.sample(range(n_nodes), 2)
+        G.add_edge(node1, node2)
+
+    return G
+
 class GraphDataset(Dataset):
 
-    def __init__(self, num_graphs, p=0.25, max_nodes=100):
+    def __init__(self, num_graphs, p=0.25, max_nodes=10):
         self.num_graphs = num_graphs
         self.max_nodes = max_nodes
         self.p = p
 
     def __getitem__(self, idx):
-        #num_nodes = random.randint(3, self.max_nodes)
-        #num_nodes = random.randint(9, 10)
-        num_nodes = 10
+        #num_nodes = random.randint(4, self.max_nodes)
+        num_nodes = random.randint(9, 10)
+        #num_nodes = 10
         #weights = np.random.randint(1, 1, num_nodes)
         weights = np.ones(num_nodes)
 
-        graph = fast_gnp_random_graph(num_nodes, self.p)
+        #graph = fast_gnp_random_graph(num_nodes, self.p)
+        graph = generate_random_graph(num_nodes)
 
         adjacency = np.zeros((num_nodes, num_nodes), dtype=int)
         for key, value in graph._adj.items():
@@ -135,14 +165,14 @@ for e in range(num_epochs):
 
             #skm = SphericalKMeans(n_clusters=K).fit(graph_embeds)
             #coloring = SoftKMeans(n_clusters=K, n_init='auto').fit_predict(graph_embeds)
-            softkmeans = SoftKMeans(n_clusters=K, verbose=False)
+            softkmeans = SoftKMeans(n_clusters=K, verbose=False, n_init='auto')
             cluster_result = softkmeans(graph_embeds)
             soft_assignment = cluster_result.soft_assignment.squeeze()
             coloring = cluster_result.labels.squeeze().detach().numpy()
 
             spill_cost, spilled = graph.calc_spill_cost(coloring, K)
             spill_cost = -spill_cost
-            loss += spill_cost
+            #loss += spill_cost
             spill_costs.append(spill_cost*K)
 
 
@@ -150,11 +180,12 @@ for e in range(num_epochs):
             #default_color = torch.argmax(soft_assignment, dim=-1)
             num_spilled = len(spilled)
             num_not_spilled = num_nodes - num_spilled
-            for j in range(num_nodes):
-                if j in spilled:
-                    loss += torch.log(soft_assignment[j, coloring[j]]) / num_spilled
-                else:
-                    loss -= torch.log(soft_assignment[j, coloring[j]]) / num_not_spilled
+            if not torch.any(torch.isnan(soft_assignment)):
+                for j in range(num_nodes):
+                    if j in spilled:
+                        loss += torch.log(soft_assignment[j, coloring[j]]) / num_spilled
+                    else:
+                        loss -= torch.log(soft_assignment[j, coloring[j]]) / num_not_spilled
 
 
             coloring = findRegularChaitinColoring(graph, K)

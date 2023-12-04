@@ -12,7 +12,7 @@ class GraphNeuralNetwork(nn.Module):
         self.embed_dim = embed_dim
         transformer_layer = nn.TransformerEncoderLayer(
             d_model=self.embed_dim,
-            nhead=4,
+            nhead=1,
             dim_feedforward=self.embed_dim,
             batch_first=True
         )
@@ -20,19 +20,27 @@ class GraphNeuralNetwork(nn.Module):
         self.output = nn.Linear(self.embed_dim, out_dim)
 
     def forward(self, graphs):
-        embeddings, attns = self.create_embeddings(graphs)
+        embeddings, attns, padding_masks = self.create_embeddings(graphs)
 
-        out_embeddings = self.encoder(embeddings, src_key_padding_mask=attns)
+        #out_embeddings = self.encoder(embeddings, src_key_padding_mask=padding_masks, mask=attns)
+        out_embeddings = self.encoder(embeddings, src_key_padding_mask=padding_masks)
 
         embeds = self.output(out_embeddings)
 
         return nn.functional.normalize(embeds, dim=-1)
 
     def create_embeddings(self, graphs):
-        all_embeddings = []
-        attns = []
 
+        max_graph_len = 0
         for graph in graphs:
+            if len(graph.costList) > max_graph_len:
+                max_graph_len = len(graph.costList)
+
+        all_embeddings = []
+        attns = torch.zeros((len(graphs), max_graph_len, max_graph_len))
+        padding_masks = []
+
+        for i, graph in enumerate(graphs):
             # Create spectral embeddings of nodes
             adjacency = np.array(graph.adjacencyMatrix)
             n_components = min(self.embed_dim, len(graph.adjacencyMatrix)-2)
@@ -51,15 +59,21 @@ class GraphNeuralNetwork(nn.Module):
 
             # Append embeddings and lengths to a list
             all_embeddings.append(embeddings)
-            attn_mask = torch.ones(embeddings.shape[0])
-            attns.append(attn_mask)
+            padding_mask = torch.ones(embeddings.shape[0])
+            #padding_mask = torch.tensor(graph.adjacencyMatrix, dtype=torch.bool)
+            padding_masks.append(padding_mask)
+
+            attn_mask = torch.tensor(graph.adjacencyMatrix, dtype=torch.bool)
+            graph_size = len(attn_mask)
+            attns[i, :graph_size, :graph_size] = attn_mask
 
         all_embeddings = torch.nn.utils.rnn.pad_sequence(all_embeddings, batch_first=True)
-        attns = torch.nn.utils.rnn.pad_sequence(attns, batch_first=True)
+        padding_masks = torch.nn.utils.rnn.pad_sequence(padding_masks, batch_first=True)
+        #attns = torch.nn.utils.rnn.pad_sequence(attns, batch_first=True)
 
-        attns = torch.log(attns)
+        #padding_masks = torch.log(padding_masks)
         
-        return all_embeddings, attns
+        return all_embeddings, attns, padding_masks
 
 '''
 nodenames = ["a", "b", "c", "d", "e", "f", "g"]
