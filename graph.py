@@ -52,6 +52,7 @@ class InterferenceGraph:
                 to_check = to_check and (coloring[i] == coloring[j])
                 to_check = to_check and (i not in spilled)
                 to_check = to_check and (j not in spilled)
+                to_check = to_check and (i != j)
                 if to_check:
                     if self.costList[i] > self.costList[j]:
                         spilled.append(i)
@@ -61,6 +62,13 @@ class InterferenceGraph:
                         cost += self.costList[j]
 
         return cost, spilled
+    
+    def calculate_feature(self):
+        summ = 0
+        for i in range(len(self.adjacencyMatrix)):
+            summ += self.adjacencyMatrix[i,:].mean()
+        summ /= len(self.adjacencyMatrix)
+        return summ
     
 def auto_name(num_nodes):
     labels = []
@@ -86,6 +94,7 @@ def read_from_csv(filename):
 
     costList = []
     for j in range(len(adjacency)):
+        adjacency[j,j] = 1
         costList.append(adjacency[j,j])
 
     return InterferenceGraph(labels, costList, adjacency)

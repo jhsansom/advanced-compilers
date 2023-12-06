@@ -22,8 +22,8 @@ class GraphNeuralNetwork(nn.Module):
     def forward(self, graphs):
         embeddings, attns, padding_masks = self.create_embeddings(graphs)
 
-        #out_embeddings = self.encoder(embeddings, src_key_padding_mask=padding_masks, mask=attns)
-        out_embeddings = self.encoder(embeddings, src_key_padding_mask=padding_masks)
+        out_embeddings = self.encoder(embeddings, src_key_padding_mask=padding_masks, mask=attns)
+        #out_embeddings = self.encoder(embeddings, src_key_padding_mask=padding_masks)
 
         embeds = self.output(out_embeddings)
 
