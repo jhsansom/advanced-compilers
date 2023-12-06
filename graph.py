@@ -1,3 +1,7 @@
+import pandas as pd
+import numpy as np
+from string import ascii_lowercase
+
 class Node:
     def __init__(self, label, cost):
         self.label = label      # to give the node a label like "a" or "b"
@@ -57,3 +61,36 @@ class InterferenceGraph:
                         cost += self.costList[j]
 
         return cost, spilled
+    
+def auto_name(num_nodes):
+    labels = []
+    for i in range(num_nodes):
+        idx = i % 26
+        idx_num = i // 26
+        label = ascii_lowercase[idx] * (idx_num + 1)
+        labels.append(label)
+    return labels
+    
+
+def read_from_csv(filename):
+    csv_data = pd.read_csv(filename).to_numpy()[:,1:]
+    adjacency = np.array(csv_data > 0, dtype=int)
+
+    for i in range(adjacency.shape[0]):
+        row = adjacency[i,:]
+        if not np.any(row > 0):
+            break
+
+    adjacency = adjacency[:i, :i]
+    labels = auto_name(len(adjacency))
+
+    costList = []
+    for j in range(len(adjacency)):
+        costList.append(adjacency[j,j])
+
+    return InterferenceGraph(labels, costList, adjacency)
+    
+
+if __name__ == '__main__':
+    data = read_from_csv('graphs/2002-05-02-CastTest.graph')
+    print(data)
