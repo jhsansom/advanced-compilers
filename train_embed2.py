@@ -20,6 +20,7 @@ from torch_kmeans import SoftKMeans
 
 track_via_wandb = False
 track_via_tensorboard = True
+run_on_real_graphs = False
 
 def generate_random_graph(n_nodes):
     """
