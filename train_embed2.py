@@ -18,8 +18,8 @@ writer = SummaryWriter()
 #from sklearn.cluster import KMeans
 from torch_kmeans import SoftKMeans
 
-track_via_wandb = True
-track_via_tensorboard = False
+track_via_wandb = False
+track_via_tensorboard = True
 
 def generate_random_graph(n_nodes):
     """
@@ -59,10 +59,10 @@ class GraphDataset(Dataset):
 
     def __getitem__(self, idx):
         #num_nodes = random.randint(4, self.max_nodes)
-        num_nodes = random.randint(9, 10)
-        #num_nodes = 10
-        #weights = np.random.randint(1, 1, num_nodes)
-        weights = np.ones(num_nodes)
+        #num_nodes = random.randint(9, 10)
+        num_nodes = 10
+        weights = np.random.randint(1, 50, num_nodes)
+        #weights = np.ones(num_nodes)
 
         #graph = fast_gnp_random_graph(num_nodes, self.p)
         graph = generate_random_graph(num_nodes)
@@ -138,7 +138,7 @@ softmax = nn.Softmax(dim=-1)
 
 ii = 0
 
-num_epochs = 100
+num_epochs = 10
 for e in range(num_epochs):
     print(f'Epoch Num = {e+1}/{num_epochs}')
     for batch in dataloader:
@@ -225,3 +225,62 @@ for e in range(num_epochs):
 
 if track_via_tensorboard:
     writer.close()
+
+
+##################################################################
+# Process real graphs
+##################################################################
+
+if run_on_real_graphs:
+    print('================== RUNNING ON REAL GRAPHS ==================')
+
+    from os import listdir
+    from os.path import isfile, join
+    from graph import read_from_csv
+
+    mypath = './graphs/'
+    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+    graphs = []
+    for filename in onlyfiles:
+        full_filename = join(mypath, filename)
+        graph = read_from_csv(full_filename)
+        if len(graph.adjacencyMatrix) > 3:
+            graphs.append(graph)
+
+
+    out = GNN(graphs)
+
+    spill_costs = []
+    spill_costs_chaitin = []
+    for i, graph in enumerate(graphs):
+        num_nodes = len(graph.adjacencyMatrix)
+        K = random.randint(3, num_nodes-1)
+        graph_embeds = out[i,:num_nodes,:].unsqueeze(0)#.squeeze().detach().numpy()
+
+        #skm = SphericalKMeans(n_clusters=K).fit(graph_embeds)
+        #coloring = SoftKMeans(n_clusters=K, n_init='auto').fit_predict(graph_embeds)
+        softkmeans = SoftKMeans(n_clusters=K, verbose=False, n_init='auto')
+        cluster_result = softkmeans(graph_embeds)
+        soft_assignment = cluster_result.soft_assignment.squeeze()
+        coloring = cluster_result.labels.squeeze().detach().numpy()
+
+        spill_cost, spilled = graph.calc_spill_cost(coloring, K)
+        spill_cost = -spill_cost
+        #loss += spill_cost
+        spill_costs.append(spill_cost*K)
+
+        coloring = findRegularChaitinColoring(graph, K)
+        spill_cost_chaitin = 0
+        for j, color in enumerate(coloring):
+            if color is None:
+                spill_cost_chaitin -= graph.costList[j]
+        spill_costs_chaitin.append(spill_cost_chaitin*K)
+
+    avg_gnn = mean(spill_costs)
+    avg_chaitin = mean(spill_costs_chaitin)
+    ratio = avg_gnn / (avg_chaitin - 1e-7)
+
+    print('RESULTS ON REAL DATA')
+    print(f'Ratio between GNN and Chaitin: {ratio:.3f}')
+    print(f'Avg GNN: {avg_gnn:.3f}')
+    print(f'Avg Chaitin: {avg_chaitin:.3f}')

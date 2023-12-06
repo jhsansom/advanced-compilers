@@ -73,12 +73,12 @@ def auto_name(num_nodes):
     
 
 def read_from_csv(filename):
-    csv_data = pd.read_csv(filename).to_numpy()[:,1:]
-    adjacency = np.array(csv_data > 0, dtype=int)
+    csv_data = pd.read_csv(filename, header=None).to_numpy()
+    adjacency = np.array(csv_data >= 0, dtype=int)
 
     for i in range(adjacency.shape[0]):
         row = adjacency[i,:]
-        if not np.any(row > 0):
+        if not np.any(row >= 0):
             break
 
     adjacency = adjacency[:i, :i]
