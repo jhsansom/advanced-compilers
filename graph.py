@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from string import ascii_lowercase
+import networkx as nx
 
 class Node:
     def __init__(self, label, cost):
@@ -70,6 +71,38 @@ class InterferenceGraph:
         summ /= len(self.adjacencyMatrix)
         return summ
     
+    def get_networkx_colored(self, coloring):
+        coloring_dict = {}
+        coloring_idx = []
+        count = 0
+        for i in range(len(coloring)):
+            color = coloring[i]
+            if color is None:
+                coloring_idx.append(0)
+            elif color in coloring_dict:
+                coloring_idx.append(coloring_dict[color])
+            else:
+                coloring_dict[color] = count
+                coloring_idx.append(coloring_dict[color])
+                count += 1
+        coloring = coloring_idx
+
+        colors = ['red', 'blue', 'green', 'yellow', 'orange']
+
+        nx_graph = nx.Graph()
+        edges_added = []
+        color_map = []
+        for i in range(len(self.adjacencyMatrix)):
+            for j in range(len(self.adjacencyMatrix)):
+                if (i != j) and (self.adjacencyMatrix[i,j] != 0):
+                    if (j,i) not in edges_added and (i,j) not in edges_added:
+                        nx_graph.add_edge(i, j)
+                        edges_added.append((i,j))
+            color_map.append(colors[coloring[i]])
+
+        nx.draw(nx_graph, node_color=color_map)
+
+
 def auto_name(num_nodes):
     labels = []
     for i in range(num_nodes):

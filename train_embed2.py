@@ -69,8 +69,10 @@ class RealGraphDataset(Dataset):
                 graphs.append(graph)
 
         self.graphs = graphs
+        self.onlyfiles = onlyfiles
 
     def __getitem__(self, idx):
+        print(self.onlyfiles[idx])
         return self.graphs[idx]
 
     def __len__(self):
