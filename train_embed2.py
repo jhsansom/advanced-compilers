@@ -148,7 +148,7 @@ if __name__ == '__main__':
     num_epochs = 50
     for e in range(num_epochs):
         print(f'\nEpoch Num = {e+1}/{num_epochs}')
-        for batch in dataloader:
+        for jj, batch in enumerate(dataloader):
             optimizer.zero_grad()
 
             # Get embeddings for all nodes across all graphs in the batch
@@ -214,8 +214,8 @@ if __name__ == '__main__':
             if track_via_wandb:
                 wandb.log({"loss": loss, "ratio": ratio})
             if track_via_tensorboard:
-                writer.add_scalar("loss", loss, e)
-                writer.add_scalar("ratio", ratio, e)
+                writer.add_scalar("loss", loss, jj + e*dataloader.__len__())
+                writer.add_scalar("ratio", ratio, jj + e*dataloader.__len__())
 
 
         if run_on_real_graphs:
